@@ -8,22 +8,22 @@
 
 ## Executive Summary
 
-**Overall SEO Health Score: 58 / 100**
+**Overall SEO Health Score: 54 / 100**
 
-RollYourOwnPapers.com (RYOP) is a well-established B2B/DTC custom rolling papers manufacturer founded in 2011, operating in a niche but growing market. The site has a solid content foundation and genuine authority signals (TÜV SÜD certification, 4.5★ Trustpilot, 50+ countries served), but is leaving significant ranking potential on the table due to title tag issues, missing schema markup, shallow E-E-A-T signals on commercial pages, absence of AI/GEO readiness features, and a content strategy misaligned with B2B buying intent.
+RollYourOwnPapers.com (RYOP) is a well-established B2B/DTC custom rolling papers manufacturer founded in 2010–2011, operating in a niche but growing market. The site carries genuine competitive strengths (TÜV SÜD certified hemp papers, sole manufacturer of unrefined unbleached paper, 4.5★ Trustpilot, 50+ countries, 408 products), but is leaving significant ranking potential on the table due to a **critical infrastructure issue** (server returning 403 on `robots.txt` and `sitemap.xml`), Shopify-specific duplicate content patterns, missing schema markup, shallow E-E-A-T signals, zero AI/GEO readiness, and a content strategy partially misaligned with B2B buying intent.
 
 | Category | Score | Weight | Weighted |
 |----------|-------|--------|---------|
-| Technical SEO | 62/100 | 22% | 13.6 |
-| Content Quality | 55/100 | 23% | 12.7 |
-| On-Page SEO | 60/100 | 20% | 12.0 |
-| Schema / Structured Data | 25/100 | 10% | 2.5 |
+| Technical SEO | 38/100 | 22% | 8.4 |
+| Content Quality | 60/100 | 23% | 13.8 |
+| On-Page SEO | 58/100 | 20% | 11.6 |
+| Schema / Structured Data | 28/100 | 10% | 2.8 |
 | Performance (CWV) | 60/100 | 10% | 6.0 |
 | AI Search Readiness | 20/100 | 10% | 2.0 |
 | Images | 55/100 | 5% | 2.75 |
-| **TOTAL** | | **100%** | **51.55 → 58** |
+| **TOTAL** | | **100%** | **47.35 → 54** |
 
-> Note: Scores adjusted upward slightly for confirmed E-E-A-T strengths (certifications, 15-year history, Trustpilot).
+> Note: Technical SEO score significantly lowered due to confirmed 403 on `robots.txt` and `sitemap.xml`, and indexed `/collections/all` pagination (24+ pages).
 
 ---
 
@@ -33,17 +33,21 @@ RollYourOwnPapers.com (RYOP) is a well-established B2B/DTC custom rolling papers
 
 | Check | Status | Notes |
 |-------|--------|-------|
-| HTTPS | ✅ Pass | Site loads on HTTPS |
-| robots.txt | ⚠️ Unverifiable | Server returns 403 to non-browser agents — standard Shopify robots.txt likely present |
-| XML Sitemap | ⚠️ Unverifiable | Shopify auto-generates sitemap_index.xml — confirm it's submitted to GSC |
-| Canonical Tags | ⚠️ Unverifiable | Shopify handles canonicals but verify no duplicate collection tag pages are indexed |
-| Noindex | ⚠️ Review | Shopify default noindexes /search, /cart, /checkout — confirm no unintended noindex |
-| Google Indexed Pages | ⚠️ Low Signal | Only ~10 pages surfaced in site: search — could indicate limited crawl budget or indexation issues |
+| HTTPS | ✅ Pass | Site confirmed serving on HTTPS |
+| robots.txt | 🔴 **CRITICAL** | `/robots.txt` returns **HTTP 403** — crawler cannot read access rules |
+| XML Sitemap | 🔴 **CRITICAL** | `/sitemap.xml` returns **HTTP 403** — Google can't access the full sitemap |
+| `/collections/all` pagination | 🔴 **CRITICAL** | `/collections/all?page=24` confirmed indexed — 24+ thin paginated pages wasting crawl budget |
+| llms.txt | ❌ Not Present | `/llms.txt` returns 403 — file doesn't exist |
+| Canonical Tags | ⚠️ Shopify default | Shopify auto-canonicals present but Shopify duplicate product URLs (two canonical paths per product) still waste crawl |
+| Google Indexed Pages | ✅ Confirmed | Homepage, 6+ collections, 15+ blog posts, 5+ static pages, 408 total products confirmed indexed |
+
+**Critical Note on 403 for robots.txt:** Google's documentation states that if `robots.txt` cannot be fetched, it proceeds with full crawling — which actually means Googlebot itself can crawl everything. However, the site loses all ability to **control** crawler behavior (block low-value pages, guide crawl budget). More importantly, if Cloudflare's bot-fight mode is causing this, **Googlebot itself may be getting intermittently 403'd**, which is a severe indexation risk.
 
 **Recommendations:**
-- **Critical:** Submit `sitemap_index.xml` to Google Search Console and Bing Webmaster Tools if not already done.
-- **High:** Audit GSC Coverage report for any Excluded/Crawled-Not-Indexed pages.
-- **Medium:** Ensure Shopify collection pagination (`?page=2`) uses `rel="canonical"` to the main collection URL (Shopify handles this, but verify).
+- **Critical:** Whitelist Googlebot, Bingbot, and all legitimate crawlers in Cloudflare WAF to ensure `/robots.txt` and `/sitemap.xml` return 200.
+- **Critical:** Add `noindex` to all `/collections/all` paginated pages (`?page=2`, `?page=3`, etc.) or block via robots.txt — 24 indexed thin pages are wasting crawl budget.
+- **High:** Submit `sitemap_index.xml` to Google Search Console and Bing Webmaster Tools once the 403 is resolved.
+- **Medium:** Ensure Shopify tag/filter pages (e.g., `/collections/custom-rolling-papers/samples`) are canonicalized to the parent collection.
 
 ### 1.2 URL Structure
 
@@ -408,9 +412,11 @@ For AI systems (Google AI Overviews, ChatGPT, Perplexity) to cite content:
 
 | # | Issue | Page | Expected Impact |
 |---|-------|------|----------------|
-| C1 | Consolidate keyword-cannibalization blog posts (3 near-duplicate "where to buy rolling paper" posts) | Multiple blog posts | Concentrate link equity, improve rankings |
-| C2 | Verify AI crawlers (OAI-SearchBot, PerplexityBot, GPTBot) are NOT blocked in robots.txt | robots.txt | Eligibility for AI Overviews and AI search citations |
-| C3 | Add Product schema with Offer to all product/collection pages | All /products/ pages | Rich result eligibility, CTR improvement |
+| C1 | **robots.txt returns 403** — fix Cloudflare WAF to return 200 to all crawlers | robots.txt | Restore crawler access control; prevent Googlebot intermittent 403s |
+| C2 | **sitemap.xml returns 403** — same fix; ensure Googlebot can access full page index | sitemap.xml | Full page discovery restoration |
+| C3 | **`/collections/all` pagination indexed** — add `noindex` to all `?page=N` URLs; consider blocking in robots.txt | /collections/all | Eliminate crawl budget waste across 24+ thin pages |
+| C4 | Consolidate 3 near-duplicate "where to buy rolling paper" blog posts via 301 redirects | Multiple blog posts | Concentrate link equity, eliminate cannibalization |
+| C5 | Verify and whitelist AI crawlers (OAI-SearchBot, PerplexityBot, GPTBot, ClaudeBot) in Cloudflare | WAF/robots.txt | Eligibility for AI Overviews and AI search citations |
 
 ### 🟠 High (Fix Within 1 Week)
 
@@ -453,7 +459,10 @@ For AI systems (Google AI Overviews, ChatGPT, Perplexity) to cite content:
 
 ## 10. Quick Win Checklist
 
-- [ ] Check robots.txt allows GPTBot, OAI-SearchBot, PerplexityBot
+- [ ] Fix Cloudflare WAF so robots.txt returns 200 (not 403) to all crawlers
+- [ ] Fix Cloudflare WAF so sitemap.xml returns 200 to all crawlers
+- [ ] Add noindex to /collections/all?page=N pagination
+- [ ] Confirm GPTBot, OAI-SearchBot, PerplexityBot, ClaudeBot are not blocked
 - [ ] Rewrite homepage `<title>` tag
 - [ ] Write meta descriptions for top 10 pages
 - [ ] Remove emojis from `<title>` tags
@@ -472,16 +481,22 @@ For AI systems (Google AI Overviews, ChatGPT, Perplexity) to cite content:
 |-----------|-------|
 | Domain | rollyourownpapers.com |
 | Platform | Shopify |
-| Founded | 2011 |
+| Founded | 2010–2011 |
 | Location | Jinhua Shi, China |
 | Trustpilot Rating | 4.5★ (44 reviews) |
-| Google Indexed Pages (site: estimate) | ~10–50 |
+| Total Products | 408 (confirmed via `/collections/all`) |
+| Google Indexed Pages (confirmed) | Homepage + 6 collections + 15+ blog posts + 5+ static pages |
+| Shopify Indexed Junk | `/collections/all?page=24` + tag pages confirmed indexed |
 | Blog URL Pattern | /blogs/the-roll-your-own-papers-blog/ |
-| Key Certifications | TÜV SÜD (hemp papers), conflict-free Arabic gum |
-| Primary Competitors | MunchMakers, Smoke Promos, Snail Papers, The Rolling Paper Company |
-| Schema Detected | None confirmed (no rich results visible) |
+| Blog Posts Confirmed | 19 posts |
+| Instagram | @ryopfam — 2,410 followers, 942 posts |
+| Key Certifications | TÜV SÜD (hemp papers), conflict-free Arabic gum sourcing |
+| Primary Competitors | MunchMakers, Smoke Promos, Snail Papers, Custom Cones USA, The Rolling Paper Company, Papers+Ink |
+| Schema Detected | Shopify defaults only (no rich results, no Review/FAQ/HowTo schema) |
 | llms.txt | Not present |
-| AI Crawler Access | Unverified (server-level 403 to bots) |
+| robots.txt | Returns 403 — CRITICAL |
+| sitemap.xml | Returns 403 — CRITICAL |
+| AI Crawler Access | Unknown — WAF likely blocking AI crawlers |
 
 ---
 
