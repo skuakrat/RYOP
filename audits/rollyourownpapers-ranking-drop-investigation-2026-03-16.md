@@ -49,23 +49,26 @@ The drop is **not a manual penalty**. It is the result of **three compounding al
 
 ---
 
-## 2. Algorithm Update Timeline (Sept 2025 – March 2026)
+## 2. Algorithm Update Timeline (June 2025 – March 2026)
 
-Three updates hit RYOP's specific weaknesses in sequence:
+Four updates hit RYOP's specific weaknesses in sequence — the first may have initiated a slow decline that the later three accelerated:
 
 ```
-Sept 2025          Dec 2025           March 2026
-    |                  |                   |
-[Aug Spam Update] [Dec Core Update] [March Core Update]
-Targeted:         Targeted:          Targeted:
-- Scaled AI       - Low-effort AI    - Holistic CWV
-  content           content            (site-wide)
-- Doorway pages   - E-E-A-T gaps     - INP threshold
-- Near-duplicate  - Anonymous          lowered to 150ms
-  content           authorship       - Info Gain Score
-- Keyword         - Thin collection  - Author entity
-  stuffing          pages              signals
+July 2025       Sept 2025          Dec 2025           March 2026
+    |               |                  |                   |
+[June Core]  [Aug Spam Update] [Dec Core Update] [March Core Update]
+MUVERA        Targeted:         Targeted:          Targeted:
+algorithm     - Scaled AI       - Low-effort AI    - Holistic CWV
+introduced:     content           content            (site-wide)
+niche sites   - Doorway pages   - E-E-A-T gaps     - INP threshold
+beat          - Near-duplicate  - Anonymous          lowered to 150ms
+generalists     content           authorship       - Info Gain Score
+              - Keyword         - Thin collection  - Author entity
+                stuffing          pages              signals
 ```
+
+**Also: January 2026 Cannabis Content Policy Update**
+Google updated its cannabis-related content policies in January 2026. While primarily affecting Ads, these policy shifts often cascade into organic quality scoring for cannabis-adjacent sites. Rolling paper retailers may face heightened scrutiny under updated YMYL classification — meaning E-E-A-T requirements are stricter for this niche than for general e-commerce.
 
 ### Update 1: August 2025 Spam Update (Aug 26 – Sept 22, 2025)
 
@@ -163,6 +166,7 @@ Both have:
 
 | Root Cause | Update That Triggered It | Severity |
 |-----------|--------------------------|---------|
+| **Shopify `\| within: collection` Liquid bug** — every internal link points to non-canonical URL, splitting PageRank | All updates (structural leak) | 🔴 Critical |
 | Anonymous blog content (no author attribution) | December 2025 Core | 🔴 Critical |
 | AI-pattern content (emojis, generic phrasing, no unique insight) | Dec 2025 Core + Aug Spam | 🔴 Critical |
 | 3x near-duplicate "where to buy" blog posts | August 2025 Spam | 🔴 Critical |
@@ -170,8 +174,10 @@ Both have:
 | /collections/all pagination (24+ thin indexed pages) | March 2026 Core (CWV) | 🟠 High |
 | Weak E-E-A-T vs. certified competitors (Papers+Ink, Snail) | December 2025 Core | 🟠 High |
 | Shopify performance issues (408 products, 3D visualizer JS) | March 2026 Core (CWV) | 🟠 High |
+| Cannabis niche YMYL heightened scrutiny | Jan 2026 Policy Update | 🟠 High |
+| No original proprietary data/research (vs. Custom Cones USA) | June + Dec 2025 Core | 🟠 High |
 | Forward-dated content ("2026 Guide" published 2025) | August 2025 Spam | 🟡 Medium |
-| Low review count (44 Trustpilot in 15 years) | December 2025 Core | 🟡 Medium |
+| Low review count (44 Trustpilot + unknown GBP reviews) | December 2025 Core | 🟡 Medium |
 | Missing Product/Organization schema | General ranking signal | 🟡 Medium |
 
 ---
@@ -179,6 +185,35 @@ Both have:
 ## 5. Recovery Plan
 
 Recovery from algorithm-driven drops requires directly addressing the signals that caused the penalty. Based on Google's documented recovery guidance: sites typically need to demonstrate **sustained quality improvement over 1–2 full crawl cycles** (approximately 2–4 months) before rankings recover. There is no shortcut — changes made today will be evaluated at the next core update.
+
+### 🆕 Phase 0: Fix the Shopify Liquid Duplicate URL Bug (Week 1 — Highest Priority Technical Fix)
+
+This is a Shopify-specific issue the parallel investigation confirmed is a major ranking signal leak. **This is separate from the robots.txt issue and must be fixed independently.**
+
+**The problem:** Shopify's default Liquid template uses `{{ product.url | within: collection }}` in product card links. This generates URLs like:
+```
+/collections/custom-rolling-papers/products/custom-hemp-rolling-papers
+```
+instead of the canonical:
+```
+/products/custom-hemp-rolling-papers
+```
+
+Every time a user or Googlebot follows an internal link from a collection page to a product, they land on the non-canonical URL. This **splits PageRank** across two URLs for every product, meaning neither version accumulates full authority.
+
+**The fix:** In your Shopify theme's Liquid files (typically `product-card.liquid`, `card-product.liquid`, or `card-wrapper.liquid`), find every instance of:
+```liquid
+{{ product.url | within: collection }}
+```
+Replace with:
+```liquid
+{{ product.url }}
+```
+This forces all internal links to point to the canonical `/products/` URL. Google consolidates the ranking signals to the canonical within 4–8 weeks of recrawling.
+
+**Also check:** `product-template.liquid` for breadcrumb links that may also use `| within: collection`.
+
+---
 
 ### Phase 1: Stop the Bleeding (Week 1 — Fix Infrastructure)
 
@@ -407,11 +442,26 @@ This auto-generates compliant structured data for:
 }
 ```
 
-**5.4 Increase Trustpilot reviews:**
-Set up a post-purchase email at 7 days post-delivery:
-> "Hi [Name], how are you enjoying your RYOP order? We'd love to hear your feedback — a quick Trustpilot review helps our small team a lot: [link]. Thank you!"
+**5.4 Increase reviews — both Trustpilot AND Google Business Profile:**
 
-Target: 200+ reviews within 6 months. This is the fastest trust authority signal you can build.
+Google's quality raters weight **Google Business Profile reviews more heavily** than third-party platforms like Trustpilot. Set up post-purchase email sequences for both:
+
+Post-purchase email at 7 days post-delivery:
+> "Hi [Name], how are you enjoying your RYOP order? A quick review helps our team a lot — you can leave one on [Trustpilot: link] or [Google: link]. Thank you!"
+
+Target: 200+ Trustpilot + 100+ Google Business Profile reviews within 6 months.
+
+**5.5 Create original proprietary content (the Custom Cones USA advantage):**
+
+Custom Cones USA ranks #4–5 because they published a **"2024 Pre-Roll Consumer Report"** — a 900-person consumer survey conducted with cannabis analytics firm Headset, covering 12 states. This is exactly the type of original proprietary data the June and December 2025 core updates explicitly rewarded.
+
+RYOP should commission or run equivalent research:
+- Survey 500+ dispensary owners about custom packaging purchasing criteria
+- Publish findings as "The 2026 Custom Rolling Papers B2B Buyer Report"
+- Create comparison tables of paper materials, MOQs, and lead times across the industry
+- Include behind-the-scenes factory content (photos, videos) as E-E-A-T evidence
+
+This type of content creates a **citation moat** — competitors cannot replicate your data, and Google rewards original research with sustained rankings.
 
 ---
 
@@ -459,13 +509,15 @@ If author bylines, emoji removal, and the duplicate post consolidation are done,
 
 | Signal | RYOP | Papers+Ink (#1) | Snail Papers (#2) | Custom Cones USA (#5) |
 |--------|------|-----------------|-------------------|-----------------------|
-| Author bylines | ❌ None | ✅ Likely | ✅ Likely | ✅ Likely |
-| Third-party certification | ✅ TÜV SÜD | ⚠️ Unknown | ✅ FSC 2018 | ⚠️ Unknown |
-| Founding year surfaced | ⚠️ 2011 (not prominent) | ✅ Artisan story | ✅ Transparent | ✅ "French paper mill 200 years" |
-| Interactive UX | ✅ 3D visualizer | ⚠️ Standard | ✅ Online customizer | ⚠️ Standard |
-| Review count | ⚠️ 44 (Trustpilot) | Unknown | Unknown | Likely higher |
+| Author bylines | ❌ None | ✅ Likely | ✅ Likely | ✅ Confirmed |
+| Third-party certification | ✅ TÜV SÜD | ⚠️ Unknown | ✅ FSC 2018 | ⚠️ French paper mill |
+| Founding year surfaced | ⚠️ 2011 (not prominent) | ✅ Artisan story | ✅ Transparent | ✅ "200-year family tradition" |
+| Interactive UX / engagement | ✅ 3D visualizer | ⚠️ Standard | ✅ Online customizer | ✅ Knowledge Center blog |
+| Original research/data | ❌ None | ⚠️ Unknown | ⚠️ Unknown | ✅ 900-person Headset survey |
+| Review count | ⚠️ 44 (Trustpilot only) | Unknown | Unknown | ✅ Hundreds (multiple platforms) |
 | Content AI signals | ❌ Emojis, duplicates | ✅ Cleaner | ✅ Cleaner | ✅ Cleaner |
 | Title tag quality | ❌ Emoji-heavy | ✅ Clean | ✅ Clean | ✅ Clean |
+| Shopify URL canonicalization | ❌ \| within: collection bug | ⚠️ Unknown | N/A (not Shopify) | ⚠️ Unknown |
 
 **Conclusion:** RYOP has the strongest real-world credentials (TÜV SÜD > FSC, lowest MOQ, oldest in market), but the *signals* Google reads (author identity, content quality markers, engagement UX) currently favor Papers+Ink and Snail Papers. The fix is to surface RYOP's genuine strengths in Google-readable ways.
 
