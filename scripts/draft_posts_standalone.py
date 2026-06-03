@@ -19,14 +19,36 @@ HOW TO RUN (Mac/Linux terminal, or Windows Command Prompt):
     4. If the preview looks right, run for real (remove --dry-run):
            SHOPIFY_TOKEN=shpat_xxx python3 draft_posts.py
 """
-import os, sys, time, json, urllib.request, urllib.error
+import os, sys, time, json, urllib.request, urllib.error, urllib.parse
 
-STORE   = "customrollingpaper.myshopify.com"
-TOKEN   = os.environ.get("SHOPIFY_TOKEN", "")
-DRY_RUN = "--dry-run" in sys.argv
-API     = "2024-01"
-BASE    = f"https://{STORE}/admin/api/{API}"
-HEADERS = {"X-Shopify-Access-Token": TOKEN, "Content-Type": "application/json"}
+STORE     = "customrollingpaper.myshopify.com"
+DRY_RUN   = "--dry-run" in sys.argv
+API       = "2024-01"
+BASE      = f"https://{STORE}/admin/api/{API}"
+
+# Either provide a ready access token (SHOPIFY_TOKEN), OR provide a
+# Client ID + Client Secret and the script will exchange them for a
+# short-lived token via the client_credentials grant (new Dev Dashboard).
+TOKEN         = os.environ.get("SHOPIFY_TOKEN", "")
+CLIENT_ID     = os.environ.get("SHOPIFY_CLIENT_ID", "")
+CLIENT_SECRET = os.environ.get("SHOPIFY_CLIENT_SECRET", "")
+
+def fetch_token():
+    """Exchange client_id + client_secret for an access token."""
+    url = f"https://{STORE}/admin/oauth/access_token"
+    data = urllib.parse.urlencode({
+        "grant_type": "client_credentials",
+        "client_id": CLIENT_ID,
+        "client_secret": CLIENT_SECRET,
+    }).encode()
+    req = urllib.request.Request(url, data=data, method="POST",
+        headers={"Content-Type": "application/x-www-form-urlencoded"})
+    with urllib.request.urlopen(req) as r:
+        body = json.loads(r.read())
+    return body["access_token"]
+
+HEADERS = {}  # set after we have a token
+
 
 SLUGS = [
     "2019-novel-coronavirus-production-delays",
@@ -222,10 +244,23 @@ def blog_id():
     return data["blogs"][0]["id"]
 
 def main():
-    if not TOKEN:
-        print("ERROR: Set SHOPIFY_TOKEN first. Example:")
-        print("  SHOPIFY_TOKEN=shpat_xxx python3 draft_posts.py --dry-run")
-        sys.exit(1)
+    global HEADERS
+    token = TOKEN
+    if not token:
+        if CLIENT_ID and CLIENT_SECRET:
+            print("Exchanging Client ID + Secret for an access token...")
+            try:
+                token = fetch_token()
+                print("Got access token.\n")
+            except urllib.error.HTTPError as e:
+                print(f"ERROR getting token: HTTP {e.code} - {e.read().decode()[:300]}")
+                sys.exit(1)
+        else:
+            print("ERROR: Provide either SHOPIFY_TOKEN, or both")
+            print("SHOPIFY_CLIENT_ID and SHOPIFY_CLIENT_SECRET.")
+            sys.exit(1)
+
+    HEADERS = {"X-Shopify-Access-Token": token, "Content-Type": "application/json"}
 
     print(f"Loaded {len(SLUGS)} posts to set to draft.")
     if DRY_RUN:
