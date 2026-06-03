@@ -1,14 +1,19 @@
 #!/usr/bin/env python3
 """
-Delete 173 REMOVE blog posts via Shopify Admin API.
+Unpublish (set to draft) 173 REMOVE blog posts via Shopify Admin API.
+
+Setting published=false makes the post return a 404 to visitors and
+search engines (so the imported URL redirects activate) while keeping
+the content in your store. This is fully reversible — re-publish any
+post anytime from the admin. Nothing is deleted.
 
 Usage:
     export SHOPIFY_STORE=rollyourownpapers.myshopify.com
     export SHOPIFY_TOKEN=shpat_xxxxxxxxxxxxxxxxxxxx
-    python3 scripts/delete-blog-posts.py [--dry-run]
+    python3 scripts/draft-blog-posts.py [--dry-run]
 
 The script reads slugs from audits/shopify-redirects-remove-240.csv,
-finds each post by handle via the API, and deletes it.
+finds each post by handle via the API, and unpublishes it.
 """
 import csv
 import os
@@ -34,8 +39,9 @@ def shopify_get(path):
     with urllib.request.urlopen(req) as r:
         return json.loads(r.read())
 
-def shopify_delete(path):
-    req = urllib.request.Request(f"{BASE}{path}", method="DELETE", headers=HEADERS)
+def shopify_put(path, payload):
+    body = json.dumps(payload).encode()
+    req = urllib.request.Request(f"{BASE}{path}", data=body, method="PUT", headers=HEADERS)
     with urllib.request.urlopen(req) as r:
         return r.status
 
@@ -64,14 +70,15 @@ def main():
         sys.exit(1)
 
     slugs = load_slugs()
-    print(f"Loaded {len(slugs)} slugs to delete.")
+    print(f"Loaded {len(slugs)} slugs to unpublish (set to draft).")
     if DRY_RUN:
-        print("DRY RUN — no deletions will be made.\n")
+        print("DRY RUN — no changes will be made.\n")
 
     blog_id = get_blog_id()
     print(f"Blog ID: {blog_id}\n")
 
-    deleted = 0
+    drafted = 0
+    already_draft = 0
     not_found = 0
     errors = 0
 
@@ -88,12 +95,18 @@ def main():
             article_id = article["id"]
             title = article["title"]
 
+            if article.get("published_at") is None:
+                print(f"[{i}/{len(slugs)}] ALREADY DRAFT: {title}")
+                already_draft += 1
+                continue
+
             if DRY_RUN:
-                print(f"[{i}/{len(slugs)}] WOULD DELETE: {title}")
+                print(f"[{i}/{len(slugs)}] WOULD DRAFT: {title}")
             else:
-                shopify_delete(f"/blogs/{blog_id}/articles/{article_id}.json")
-                print(f"[{i}/{len(slugs)}] DELETED: {title}")
-                deleted += 1
+                payload = {"article": {"id": article_id, "published": False}}
+                shopify_put(f"/blogs/{blog_id}/articles/{article_id}.json", payload)
+                print(f"[{i}/{len(slugs)}] SET TO DRAFT: {title}")
+                drafted += 1
                 time.sleep(0.5)  # stay within 2 req/sec rate limit
 
         except urllib.error.HTTPError as e:
@@ -104,7 +117,8 @@ def main():
             print(f"[{i}/{len(slugs)}] ERROR: {slug} — {e}")
             errors += 1
 
-    print(f"\nDone. Deleted: {deleted} | Not found: {not_found} | Errors: {errors}")
+    print(f"\nDone. Drafted: {drafted} | Already draft: {already_draft} | "
+          f"Not found: {not_found} | Errors: {errors}")
 
 if __name__ == "__main__":
     main()
