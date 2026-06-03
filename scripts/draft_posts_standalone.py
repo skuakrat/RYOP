@@ -26,6 +26,19 @@ DRY_RUN   = "--dry-run" in sys.argv
 API       = "2024-01"
 BASE      = f"https://{STORE}/admin/api/{API}"
 
+# Batching: process 50 posts per run. Pass --batch N (1,2,3,4) to do
+# one group of 50 at a time. Omit --batch to process everything at once.
+BATCH_SIZE = 50
+def _batch_num():
+    for i, a in enumerate(sys.argv):
+        if a == "--batch" and i + 1 < len(sys.argv):
+            try:
+                return int(sys.argv[i + 1])
+            except ValueError:
+                return None
+    return None
+BATCH = _batch_num()
+
 # Either provide a ready access token (SHOPIFY_TOKEN), OR provide a
 # Client ID + Client Secret and the script will exchange them for a
 # short-lived token via the client_credentials grant (new Dev Dashboard).
@@ -262,41 +275,54 @@ def main():
 
     HEADERS = {"X-Shopify-Access-Token": token, "Content-Type": "application/json"}
 
-    print(f"Loaded {len(SLUGS)} posts to set to draft.")
+    # Select this batch's slice, if --batch was given.
+    if BATCH:
+        start = (BATCH - 1) * BATCH_SIZE
+        todo = SLUGS[start:start + BATCH_SIZE]
+        total_batches = (len(SLUGS) + BATCH_SIZE - 1) // BATCH_SIZE
+        print(f"BATCH {BATCH} of {total_batches}: "
+              f"posts {start + 1}-{start + len(todo)} of {len(SLUGS)}")
+    else:
+        todo = SLUGS
+        print(f"Loaded {len(SLUGS)} posts to set to draft.")
     if DRY_RUN:
         print("DRY RUN - nothing will change.\n")
+
+    if not todo:
+        print("No posts in this batch number — you're done!")
+        return
 
     bid = blog_id()
     print(f"Blog ID: {bid}\n")
 
     drafted = already = missing = errors = 0
-    for i, slug in enumerate(SLUGS, 1):
+    for i, slug in enumerate(todo, 1):
         try:
             data = get(f"/blogs/{bid}/articles.json?handle={slug}&limit=1")
             arts = data.get("articles", [])
             if not arts:
-                print(f"[{i}/{len(SLUGS)}] NOT FOUND: {slug}")
+                print(f"[{i}/{len(todo)}] NOT FOUND: {slug}")
                 missing += 1
                 continue
             a = arts[0]
             if a.get("published_at") is None:
-                print(f"[{i}/{len(SLUGS)}] ALREADY DRAFT: {a['title']}")
+                print(f"[{i}/{len(todo)}] ALREADY DRAFT: {a['title']}")
                 already += 1
                 continue
             if DRY_RUN:
-                print(f"[{i}/{len(SLUGS)}] WOULD DRAFT: {a['title']}")
+                print(f"[{i}/{len(todo)}] WOULD DRAFT: {a['title']}")
             else:
                 put(f"/blogs/{bid}/articles/{a['id']}.json",
                     {"article": {"id": a["id"], "published": False}})
-                print(f"[{i}/{len(SLUGS)}] SET TO DRAFT: {a['title']}")
+                print(f"[{i}/{len(todo)}] SET TO DRAFT: {a['title']}")
                 drafted += 1
                 time.sleep(0.5)
         except urllib.error.HTTPError as e:
-            print(f"[{i}/{len(SLUGS)}] HTTP {e.code}: {slug}")
+            print(f"[{i}/{len(todo)}] HTTP {e.code}: {slug}")
             errors += 1
             time.sleep(2)
         except Exception as e:
-            print(f"[{i}/{len(SLUGS)}] ERROR: {slug} - {e}")
+            print(f"[{i}/{len(todo)}] ERROR: {slug} - {e}")
             errors += 1
 
     print(f"\nDone. Drafted: {drafted} | Already draft: {already} | "
