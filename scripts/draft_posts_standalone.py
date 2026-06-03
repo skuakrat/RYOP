@@ -21,7 +21,7 @@ HOW TO RUN (Mac/Linux terminal, or Windows Command Prompt):
 """
 import os, sys, time, json, urllib.request, urllib.error
 
-STORE   = "rollyourownpapers.myshopify.com"
+STORE   = "customrollingpaper.myshopify.com"
 TOKEN   = os.environ.get("SHOPIFY_TOKEN", "")
 DRY_RUN = "--dry-run" in sys.argv
 API     = "2024-01"

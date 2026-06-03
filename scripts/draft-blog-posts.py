@@ -23,7 +23,7 @@ import urllib.request
 import urllib.error
 import json
 
-STORE   = os.environ.get("SHOPIFY_STORE", "")
+STORE   = os.environ.get("SHOPIFY_STORE", "customrollingpaper.myshopify.com")
 TOKEN   = os.environ.get("SHOPIFY_TOKEN", "")
 DRY_RUN = "--dry-run" in sys.argv
 
