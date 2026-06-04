@@ -1,8 +1,16 @@
 {% comment %}
-  Custom robots.txt — explicitly allows AI crawlers.
+  Custom robots.txt — renders Shopify's default rules, then explicitly allows AI crawlers.
   File location in theme: templates/robots.txt.liquid
 {% endcomment %}
-{{ 'default' | robots_txt }}
+{% for group in robots.default_groups -%}
+  {{- group.user_agent }}
+  {% for rule in group.rules -%}
+    {{ rule }}
+  {% endfor -%}
+  {%- if group.sitemap != blank -%}
+    {{ group.sitemap }}
+  {% endif %}
+{%- endfor %}
 
 # AI search crawlers — explicitly allowed
 User-agent: GPTBot
