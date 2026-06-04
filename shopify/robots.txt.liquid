@@ -1,9 +1,7 @@
 {% comment %}
-  Custom robots.txt — explicitly allows AI crawlers that Cloudflare WAF may block by default.
-  Add this file to your Shopify theme as: templates/robots.txt.liquid
-  Then in Online Store > Themes > Actions > Edit code > Templates > robots.txt.liquid
+  Custom robots.txt — explicitly allows AI crawlers.
+  File location in theme: templates/robots.txt.liquid
 {% endcomment %}
-{% layout none %}
 {{ 'default' | robots_txt }}
 
 # AI search crawlers — explicitly allowed
