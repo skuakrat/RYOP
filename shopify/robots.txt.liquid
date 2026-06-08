@@ -12,6 +12,10 @@
   {% endif %}
 {%- endfor %}
 
+# Block blog tag Atom feeds (XML pages that appear as indexed junk in GSC)
+User-agent: *
+Disallow: /blogs/*/tagged/*.atom
+
 # AI search crawlers — explicitly allowed
 User-agent: GPTBot
 Allow: /
