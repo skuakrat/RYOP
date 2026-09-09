@@ -13,12 +13,19 @@
   Shopify Admin > Content > Blog posts > [post] > click <> (HTML view) >
   find the existing green CTA block and replace it with the matching block below.
 
-  TWO CHANGES FROM THE SUPPLIED TEMPLATE, BOTH DELIBERATE:
-  1. Relative URL (/pages/...) instead of the absolute https://www.rollyourownpapers.com/...
-     Relative internal links avoid protocol/domain mismatches and keep working if the
-     domain ever changes.
-  2. No target="_blank". Opening an internal link in a new tab is unnecessary and
-     breaks the back button for the reader. Keep _blank for external links only.
+  TWO BUTTONS, DELIBERATE HIERARCHY
+  Primary (filled green)  = wholesale pricing — the commercial goal of these two posts.
+  Secondary (outlined)    = free mock-up — lower commitment, catches readers who are
+                            interested but not ready to talk pricing.
+  The outlined button uses 13px/28px padding against the primary's 15px/30px so the
+  2px border does not make it taller than the primary button.
+
+  THREE CHANGES FROM THE ORIGINAL SUPPLIED TEMPLATE, ALL DELIBERATE:
+  1. Relative URLs (/pages/...) instead of absolute https://www.rollyourownpapers.com/...
+     Relative internal links avoid protocol/domain mismatches and survive a domain change.
+  2. No target="_blank" on internal links — it breaks the reader's back button for no gain.
+     Keep _blank for external links only.
+  3. Buttons wrap gracefully on mobile via inline-block + symmetric margins.
 -->
 
 
@@ -30,9 +37,10 @@
 <li>✔️ Wholesale pricing straight from the factory</li>
 <li>✔️ Your logo on every booklet — free design</li>
 <li>✔️ From 150 booklets, no setup fees</li>
-<li>✔️ TÜV SÜD certified paper and Arabic gum</li>
+<li>✔️ Free mock-up before you commit — no purchase needed</li>
 </ul>
-<a href="/pages/wholesale-rolling-papers" style="display: inline-block; background-color: #43a047; color: #fff; font-size: 18px; font-weight: bold; padding: 15px 30px; border-radius: 8px; text-decoration: none;">🛒 See Wholesale Pricing</a>
+<a href="/pages/wholesale-rolling-papers" style="display: inline-block; background-color: #43a047; color: #fff; font-size: 18px; font-weight: bold; padding: 15px 30px; border-radius: 8px; text-decoration: none; margin: 0 6px 12px;">🛒 See Wholesale Pricing</a>
+<a href="/pages/get-a-free-mock-up" style="display: inline-block; background-color: #fff; color: #2e7d32; font-size: 18px; font-weight: bold; padding: 13px 28px; border: 2px solid #43a047; border-radius: 8px; text-decoration: none; margin: 0 6px 12px;">🎨 Get a Free Mock-Up</a>
 <p style="font-size: 16px; color: #666; margin-top: 20px;">📦 <strong>Low minimums</strong> | 🚚 <strong>Free worldwide shipping</strong> | 🏭 <strong>Factory direct since 2011</strong></p>
 </div>
 
@@ -45,8 +53,9 @@
 <li>✔️ No middlemen, no distributor markup</li>
 <li>✔️ Bulk pricing that drops as volume rises</li>
 <li>✔️ Free design and free worldwide shipping</li>
-<li>✔️ 2.5-week turnaround from approved artwork</li>
+<li>✔️ See your brand on a free mock-up first</li>
 </ul>
-<a href="/pages/wholesale-rolling-papers" style="display: inline-block; background-color: #43a047; color: #fff; font-size: 18px; font-weight: bold; padding: 15px 30px; border-radius: 8px; text-decoration: none;">🛒 Get Wholesale Pricing</a>
-<p style="font-size: 16px; color: #666; margin-top: 20px;">🏭 <strong>Straight from the factory</strong> | 💵 <strong>Price match guarantee</strong> | 🌱 <strong>Certified materials</strong></p>
+<a href="/pages/wholesale-rolling-papers" style="display: inline-block; background-color: #43a047; color: #fff; font-size: 18px; font-weight: bold; padding: 15px 30px; border-radius: 8px; text-decoration: none; margin: 0 6px 12px;">🛒 Get Wholesale Pricing</a>
+<a href="/pages/get-a-free-mock-up" style="display: inline-block; background-color: #fff; color: #2e7d32; font-size: 18px; font-weight: bold; padding: 13px 28px; border: 2px solid #43a047; border-radius: 8px; text-decoration: none; margin: 0 6px 12px;">🎨 Get a Free Mock-Up</a>
+<p style="font-size: 16px; color: #666; margin-top: 20px;">🏭 <strong>Straight from the factory</strong> | 🌱 <strong>TÜV SÜD certified materials</strong> | ⚡ <strong>2.5-week turnaround</strong></p>
 </div>
