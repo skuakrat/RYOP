@@ -1,0 +1,40 @@
+{% comment %}
+  RYOP — Phase 1: canonicalise collection tag-filter URLs to the parent collection.
+
+  PROBLEM THIS FIXES
+  Six tag-filter URLs under /collections/custom-rolling-papers each duplicate
+  2,534–2,741 words of the parent page's 2,699 words:
+      /collections/custom-rolling-papers/LOW-MOQ
+      /collections/custom-rolling-papers/Custom-Gift-Sets
+      /collections/custom-rolling-papers/Custom-Printed-Rolling-Papers
+      /collections/custom-rolling-papers/samples
+      /collections/custom-rolling-papers/booklets
+      /collections/custom-rolling-papers/booklets-with-tips
+  Several also exist in BOTH capitalised and lowercase form, doubling the count.
+  The /samples variant still holds 7 organic positions, so these are being
+  indexed in practice regardless of the noindex tag already in place.
+
+  Tag URLs cannot be 301-redirected in Shopify — they are generated on the fly.
+  The correct fix is a canonical pointing at the parent collection, which
+  consolidates the signal instead of just hiding the page.
+
+  HOW TO APPLY
+  In layout/theme.liquid, find the existing canonical line — it will look like:
+
+      <link rel="canonical" href="{{ canonical_url }}">
+
+  Replace that ONE line with the block below. Keep the existing
+  noindex snippet (current_tags / current_page) exactly as it is; canonical and
+  noindex do different jobs and both should stay.
+
+  WHY BOTH: noindex keeps the tag URL out of the index; the canonical tells
+  Google which URL the content and its link equity actually belong to.
+{% endcomment %}
+
+{%- if collection and current_tags -%}
+  <link rel="canonical" href="{{ shop.url }}{{ collection.url }}">
+{%- elsif collection and current_page > 1 -%}
+  <link rel="canonical" href="{{ shop.url }}{{ collection.url }}">
+{%- else -%}
+  <link rel="canonical" href="{{ canonical_url }}">
+{%- endif -%}

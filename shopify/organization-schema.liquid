@@ -1,0 +1,38 @@
+<!--
+  Organization + AggregateRating schema for Roll Your Own Papers.
+  Source of rating: Trustpilot (https://www.trustpilot.com/review/rollyourownpapers.com)
+  Rating: 4.8 / 5 from 73 reviews (as of 2026-06).
+
+  PLACEMENT: Add inside <head> in Layout > theme.liquid, ideally near other
+  JSON-LD. If an Organization JSON-LD block ALREADY exists in theme.liquid,
+  do NOT add a second one — instead copy just the "aggregateRating" property
+  into the existing block.
+
+  NOTE: This is for entity/AI-search (GEO) understanding. Google does NOT
+  render star rich results for self-referential Organization ratings, so do
+  not expect organic stars from this alone.
+
+  MAINTENANCE: Update ratingValue + reviewCount when they change materially
+  on Trustpilot so the schema stays accurate (required by Google guidelines).
+-->
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "Organization",
+  "name": "Roll Your Own Papers",
+  "alternateName": "RYOP",
+  "url": "https://www.rollyourownpapers.com",
+  "logo": "https://www.rollyourownpapers.com/cdn/shop/files/logo.png",
+  "description": "Custom rolling paper manufacturer and wholesale supplier of custom rolling papers, pre-roll cones, rolling trays, tips, and cannabis packaging for brands and dispensaries.",
+  "sameAs": [
+    "https://www.trustpilot.com/review/rollyourownpapers.com"
+  ],
+  "aggregateRating": {
+    "@type": "AggregateRating",
+    "ratingValue": "4.8",
+    "reviewCount": "73",
+    "bestRating": "5",
+    "worstRating": "1"
+  }
+}
+</script>
