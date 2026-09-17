@@ -1,0 +1,63 @@
+{% comment %}
+  SITE-WIDE Organization + WebSite schema.
+
+  Renders on every page EXCEPT the manufacturer page, which already has its
+  own @graph containing the Organization node (see the existing
+  `{% if page.handle == 'custom-rolling-paper-manufacturer' %}` block).
+  The `unless` guard prevents a duplicate @id on that page.
+
+  PLACEMENT: in Layout > theme.liquid, paste this block inside <head>,
+  immediately BEFORE the line:
+    {% comment %} The schema for manufacturer page {% endcomment %}
+
+  Rating source: Trustpilot (4.8 / 5 from 73 reviews, as of 2026-06).
+  Keep ratingValue + reviewCount in sync with Trustpilot over time.
+{% endcomment %}
+{%- unless page.handle == 'custom-rolling-paper-manufacturer' -%}
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@graph": [
+    {
+      "@type": "Organization",
+      "@id": "https://www.rollyourownpapers.com/#organization",
+      "name": "Roll Your Own Papers",
+      "alternateName": "RYOP",
+      "url": "https://www.rollyourownpapers.com",
+      "foundingDate": "2011",
+      "description": "Factory-direct custom rolling paper manufacturer and wholesale supplier since 2011. TÜV SÜD certified hemp and rice papers, pre-roll cones, rolling trays, tips, and cannabis packaging for brands and dispensaries.",
+      "hasCredential": {
+        "@type": "EducationalOccupationalCredential",
+        "credentialCategory": "certification",
+        "name": "TÜV SÜD Germany — Hemp Rolling Paper and Arabic Gum Adhesive Certification"
+      },
+      "aggregateRating": {
+        "@type": "AggregateRating",
+        "ratingValue": "4.8",
+        "reviewCount": "73",
+        "bestRating": "5",
+        "worstRating": "1"
+      },
+      "sameAs": [
+        "https://www.trustpilot.com/review/rollyourownpapers.com"
+      ]
+    },
+    {
+      "@type": "WebSite",
+      "@id": "https://www.rollyourownpapers.com/#website",
+      "url": "https://www.rollyourownpapers.com",
+      "name": "Roll Your Own Papers",
+      "publisher": { "@id": "https://www.rollyourownpapers.com/#organization" },
+      "potentialAction": {
+        "@type": "SearchAction",
+        "target": {
+          "@type": "EntryPoint",
+          "urlTemplate": "https://www.rollyourownpapers.com/search?q={search_term_string}"
+        },
+        "query-input": "required name=search_term_string"
+      }
+    }
+  ]
+}
+</script>
+{%- endunless -%}

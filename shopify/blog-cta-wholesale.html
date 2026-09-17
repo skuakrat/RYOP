@@ -1,0 +1,61 @@
+<!--
+  RYOP — Tier 3 wholesale CTA blocks (Part B of the wholesale-page link plan).
+
+  These REPLACE the existing CTA blocks on two posts. Both posts already carry
+  B2B/wholesale intent, but their current CTAs point at /collections/custom-rolling-papers.
+  Re-pointing them at the wholesale page gives that orphaned page two more links
+  from posts with real traffic.
+
+  Post 1: how-old-do-you-have-to-be-to-buy-rolling-papers   (1,064 clicks / 6mo)
+  Post 2: how-much-is-rolling-paper-at-a-gas-station        (436 clicks / 6mo)
+
+  HOW TO APPLY
+  Shopify Admin > Content > Blog posts > [post] > click <> (HTML view) >
+  find the existing green CTA block and replace it with the matching block below.
+
+  TWO BUTTONS, DELIBERATE HIERARCHY
+  Primary (filled green)  = wholesale pricing — the commercial goal of these two posts.
+  Secondary (outlined)    = free mock-up — lower commitment, catches readers who are
+                            interested but not ready to talk pricing.
+  The outlined button uses 13px/28px padding against the primary's 15px/30px so the
+  2px border does not make it taller than the primary button.
+
+  THREE CHANGES FROM THE ORIGINAL SUPPLIED TEMPLATE, ALL DELIBERATE:
+  1. Relative URLs (/pages/...) instead of absolute https://www.rollyourownpapers.com/...
+     Relative internal links avoid protocol/domain mismatches and survive a domain change.
+  2. No target="_blank" on internal links — it breaks the reader's back button for no gain.
+     Keep _blank for external links only.
+  3. Buttons wrap gracefully on mobile via inline-block + symmetric margins.
+-->
+
+
+<!-- ============ POST 1 — how-old-do-you-have-to-be-to-buy-rolling-papers ============ -->
+<div style="background-color: #f4fdf4; padding: 40px 20px; border-radius: 12px; text-align: center; font-family: Arial,sans-serif; margin-top: 40px;">
+<h2 style="font-size: 28px; color: #2e7d32; margin-bottom: 15px;">🏪 Stocking Rolling Papers for Your Shop?</h2>
+<p style="font-size: 18px; color: #333; max-width: 800px; margin: 0 auto 20px;">If you run a smoke shop, dispensary, or head shop, you can stock your own house brand instead of someone else's. RYOP is the factory — you get wholesale pricing direct, with no distributor in the middle.</p>
+<ul style="list-style: none; padding: 0; font-size: 17px; color: #444; line-height: 1.7; max-width: 700px; margin: 0 auto 25px;">
+<li>✔️ Wholesale pricing straight from the factory</li>
+<li>✔️ Your logo on every booklet — free design</li>
+<li>✔️ From 150 booklets, no setup fees</li>
+<li>✔️ Free mock-up before you commit — no purchase needed</li>
+</ul>
+<a href="/pages/wholesale-rolling-papers" style="display: inline-block; background-color: #43a047; color: #fff; font-size: 18px; font-weight: bold; padding: 15px 30px; border-radius: 8px; text-decoration: none; margin: 0 6px 12px;">🛒 See Wholesale Pricing</a>
+<a href="/pages/get-a-free-mock-up" style="display: inline-block; background-color: #fff; color: #2e7d32; font-size: 18px; font-weight: bold; padding: 13px 28px; border: 2px solid #43a047; border-radius: 8px; text-decoration: none; margin: 0 6px 12px;">🎨 Get a Free Mock-Up</a>
+<p style="font-size: 16px; color: #666; margin-top: 20px;">📦 <strong>Low minimums</strong> | 🚚 <strong>Free worldwide shipping</strong> | 🏭 <strong>Factory direct since 2011</strong></p>
+</div>
+
+
+<!-- ============ POST 2 — how-much-is-rolling-paper-at-a-gas-station ============ -->
+<div style="background-color: #f4fdf4; padding: 40px 20px; border-radius: 12px; text-align: center; font-family: Arial,sans-serif; margin-top: 40px;">
+<h2 style="font-size: 28px; color: #2e7d32; margin-bottom: 15px;">💰 Skip the Retail Markup — Buy Factory Direct</h2>
+<p style="font-size: 18px; color: #333; max-width: 800px; margin: 0 auto 20px;">Gas station prices include every markup between the factory and the shelf. RYOP makes rolling papers in our own facility, so buying wholesale means you pay the manufacturer — not the distributor, the wholesaler, and the retailer.</p>
+<ul style="list-style: none; padding: 0; font-size: 17px; color: #444; line-height: 1.7; max-width: 700px; margin: 0 auto 25px;">
+<li>✔️ No middlemen, no distributor markup</li>
+<li>✔️ Bulk pricing that drops as volume rises</li>
+<li>✔️ Free design and free worldwide shipping</li>
+<li>✔️ See your brand on a free mock-up first</li>
+</ul>
+<a href="/pages/wholesale-rolling-papers" style="display: inline-block; background-color: #43a047; color: #fff; font-size: 18px; font-weight: bold; padding: 15px 30px; border-radius: 8px; text-decoration: none; margin: 0 6px 12px;">🛒 Get Wholesale Pricing</a>
+<a href="/pages/get-a-free-mock-up" style="display: inline-block; background-color: #fff; color: #2e7d32; font-size: 18px; font-weight: bold; padding: 13px 28px; border: 2px solid #43a047; border-radius: 8px; text-decoration: none; margin: 0 6px 12px;">🎨 Get a Free Mock-Up</a>
+<p style="font-size: 16px; color: #666; margin-top: 20px;">🏭 <strong>Straight from the factory</strong> | 🌱 <strong>TÜV SÜD certified materials</strong> | ⚡ <strong>2.5-week turnaround</strong></p>
+</div>
